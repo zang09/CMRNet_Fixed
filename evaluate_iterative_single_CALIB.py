@@ -220,7 +220,7 @@ def main(_config, seed):
             uv = uv.t().int()
             depth_img = torch.zeros(real_shape[:2], device='cuda', dtype=torch.float)
             depth_img += 1000.
-            depth_img = visibility.depth_image(uv, depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
+            depth_img = visibility.depth_image(uv.contiguous(), depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
             depth_img[depth_img == 1000.] = 0.
 
             projected_points = torch.zeros_like(depth_img, device='cuda')
@@ -265,7 +265,7 @@ def main(_config, seed):
             uv = uv.t().int()
             depth_img = torch.zeros(real_shape[:2], device='cuda', dtype=torch.float)
             depth_img += 1000.
-            depth_img = visibility.depth_image(uv, depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
+            depth_img = visibility.depth_image(uv.contiguous(), depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
             depth_img[depth_img == 1000.] = 0.
 
             projected_points = torch.zeros_like(depth_img, device='cuda')
@@ -350,7 +350,7 @@ def main(_config, seed):
                 uv2 = uv2.t().int()
                 depth_img2 = torch.zeros(real_shape[:2], device=device)
                 depth_img2 += 1000.
-                depth_img2 = visibility.depth_image(uv2, depth2, depth_img2, uv2.shape[0], real_shape[1], real_shape[0])
+                depth_img2 = visibility.depth_image(uv2.contiguous(), depth2, depth_img2, uv2.shape[0], real_shape[1], real_shape[0])
                 depth_img2[depth_img2 == 1000.] = 0.
 
                 out_cuda2 = torch.zeros_like(depth_img2, device=device)
@@ -419,9 +419,9 @@ def main(_config, seed):
         errors_r[i] = torch.tensor(errors_r[i]) * (180.0 / 3.141592)
         errors_t[i] = torch.tensor(errors_t[i]) * 100
         print(f"Iteration {i}: \tMean Translation Error: {errors_t[i].mean():.4f} cm "
-              f"     Mean Rotation Error: {errors_r[i].mean():.4f} °")
+              f"     Mean Rotation Error: {errors_r[i].mean():.4f} deg")
         print(f"Iteration {i}: \tMedian Translation Error: {errors_t[i].median():.4f} cm "
-              f"     Median Rotation Error: {errors_r[i].median():.4f} °\n")
+              f"     Median Rotation Error: {errors_r[i].median():.4f} deg\n")
 
     print("-------------------------------------------------------")
     print("Timings:")
