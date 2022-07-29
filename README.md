@@ -1,6 +1,12 @@
 [![CC BY-NC-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
-## CMRNet: Camera to LiDAR-Map Registration (IEEE ITSC 2019)
+## CMRNet-Fixed
+
+This repository is a modified version of [CMRNet](https://github.com/cattaneod/CMRNet)
+
+--- 
+
+### Modification
 
 ### License
 This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-sa].
