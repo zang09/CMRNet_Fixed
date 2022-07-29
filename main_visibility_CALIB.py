@@ -161,13 +161,10 @@ def main(_config, _run, seed):
     def init_fn(x): return _init_fn(x, seed)
 
     dataset_size = len(dataset)
-    #print("Train size: ", dataset_size)
-    #print("Test size: ", len(dataset_val))
 
     # Training and test set creation
     num_worker = _config['num_worker']
     batch_size = _config['batch_size']
-    #print(_config['data_folder'])
     TrainImgLoader = torch.utils.data.DataLoader(dataset=dataset,
                                                  shuffle=True,
                                                  batch_size=batch_size,
