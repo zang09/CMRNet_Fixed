@@ -1,12 +1,18 @@
 [![CC BY-NC-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
-## CMRNet-Fixed
+# CMRNet-Fixed
 
 This repository is a modified version of [CMRNet](https://github.com/cattaneod/CMRNet)
 
 --- 
 
-### Modification
+### Modification  
+
+1. Fix UnicodeEncodeError
+2. Change all uv,uv2 to be contiguous
+3. Change all tensors to be on the same device
+
+--- 
 
 ### License
 This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-sa].
@@ -89,30 +95,45 @@ For reading speed and file size we decided to save the point clouds as h5 files.
 The directory structure should looks like:
 ```bash
 KITTI_ODOMETRY
-├── 00
-│   ├── image_2
-│   │   ├── 000000.png
-│   │   ├── 000001.png
-│   │   ├── ...
-│   │   └── 004540.png
-│   ├── local_maps
-│   │   ├── 000000.h5
-│   │   ├── 000001.h5
-│   │   ├── ...
-│   │   └── 004540.h5
-│   └── poses.csv
-└── 03
-    ├── image_2
-    │   ├── 000000.png
-    │   ├── 000001.png
-    │   ├── ...
-    │   └── 000800.png
-    ├── local_maps
-    │   ├── 000000.h5
-    │   ├── 000001.h5
-    │   ├── ...
-    │   └── 000800.h5
-    └── poses.csv
+└── sequences
+    ├── 00
+    │   ├── image_2
+    │   │   ├── 000000.png
+    │   │   ├── 000001.png
+    │   │   ├── ...
+    │   │   └── 004540.png
+    │ 	├── velodyne
+    │   │   ├── 000000.bin
+    │   │   ├── 000001.bin
+    │   │   ├── ...
+    │   │   └── 004540.bin
+    │   ├── local_maps
+    │   │   ├── 000000.h5
+    │   │   ├── 000001.h5
+    │   │   ├── ...
+    │   │   └── 004540.h5
+    │    ├── poses.csv
+    │		└── calib.txt
+    ├── 03		
+    │   ├── image_2
+    │   │   ├── 000000.png
+    │   │   ├── 000001.png
+    │   │   ├── ...
+    │   │   └── 000800.png
+    │ 	├── velodyne
+    │   │   ├── 000000.bin
+    │   │   ├── 000001.bin
+    │   │   ├── ...
+    │   │   └── 000800.bin
+    │   ├── local_maps
+    │   │   ├── 000000.h5
+    │   │   ├── 000001.h5
+    │   │   ├── ...
+    │   │   └── 000800.h5
+    │   ├── poses.csv
+    │		└── calib.txt
+    └── ...
+		
 
 ```
 
