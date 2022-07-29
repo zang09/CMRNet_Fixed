@@ -43,7 +43,7 @@ ex.captured_out_filter = apply_backspaces_and_linefeeds
 def config():
     savemodel = './checkpoints/'
     dataset = 'kitti'
-    data_folder = './KITTI/sequences'
+    data_folder = './KITTI/sequences/'
     use_reflectance = False
     test_sequence = 0
     occlusion_kernel = 5  # 3
@@ -65,10 +65,11 @@ def config():
     norm = 'bn'
     dropout = 0.0
     max_depth = 100.
-    maps_folder = 'local_maps_0.1'
+    maps_folder = 'local_maps'
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Device: ", device)
 
 EPOCH = 1
 def _init_fn(worker_id, seed):
@@ -117,7 +118,7 @@ def test(model, rgb_img, refl_img, target_transl, target_rot, loss_fn, camera_mo
     else:
         total_loss = loss_fn(point_clouds, target_transl, target_rot, transl_err, rot_err)
 
-    total_trasl_error = torch.tensor(0.0)
+    total_trasl_error = torch.tensor(0.0, device=target_transl.device)
     total_rot_error = quaternion_distance(target_rot, rot_err, target_rot.device)
     total_rot_error = total_rot_error * 180. / math.pi
     for j in range(rgb_img.shape[0]):
@@ -160,10 +161,13 @@ def main(_config, _run, seed):
     def init_fn(x): return _init_fn(x, seed)
 
     dataset_size = len(dataset)
+    #print("Train size: ", dataset_size)
+    #print("Test size: ", len(dataset_val))
 
     # Training and test set creation
     num_worker = _config['num_worker']
     batch_size = _config['batch_size']
+    #print(_config['data_folder'])
     TrainImgLoader = torch.utils.data.DataLoader(dataset=dataset,
                                                  shuffle=True,
                                                  batch_size=batch_size,
@@ -274,7 +278,7 @@ def main(_config, _run, seed):
         time_for_50ep = time.time()
         for batch_idx, sample in enumerate(TrainImgLoader):
 
-            #print(f'batch {batch_idx+1}/{len(TrainImgLoader)}', end='\r')
+            print(f'batch {batch_idx+1}/{len(TrainImgLoader)}', end='\r')
             start_time = time.time()
             lidar_input = []
             rgb_input = []
@@ -383,7 +387,7 @@ def main(_config, _run, seed):
 
         local_loss = 0.0
         for batch_idx, sample in enumerate(TestImgLoader):
-            # print(f'batch {batch_idx + 1}/{len(TestImgLoader)}', end='\r')
+            print(f'batch {batch_idx + 1}/{len(TestImgLoader)}', end='\r')
             start_time = time.time()
             lidar_input = []
             rgb_input = []
@@ -420,7 +424,7 @@ def main(_config, _run, seed):
                 uv = uv.t().int()
                 depth_img = torch.zeros(real_shape[:2], device='cuda', dtype=torch.float)
                 depth_img += 1000.
-                depth_img = visibility.depth_image(uv, depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
+                depth_img = visibility.depth_image(uv.contiguous(), depth, depth_img, uv.shape[0], real_shape[1], real_shape[0])
                 depth_img[depth_img == 1000.] = 0.
 
                 depth_img_no_occlusion = torch.zeros_like(depth_img, device='cuda')
@@ -474,8 +478,8 @@ def main(_config, _run, seed):
 
         print("------------------------------------")
         print('total test loss = %.3f' % (total_test_loss / len(dataset_val)))
-        print(f'total traslation error: {total_test_t / len(dataset_val)} cm')
-        print(f'total rotation error: {total_test_r / len(dataset_val)} °')
+        print(f'total translation error: {total_test_t / len(dataset_val)} cm')
+        print(f'total rotation error: {total_test_r / len(dataset_val)} deg')
         print("------------------------------------")
 
         #train_writer.add_scalar("Val_Loss", total_test_loss / len(dataset_val), epoch)
